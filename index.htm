@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Translator App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url("https://img.freepik.com/premium-vector/colorful-abstract-gradient-background_640531-486.jpg") no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #000;
+            font-size: 40px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .menu {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu div {
+            width: 30px;
+            height: 5px;
+            background-color: #000;
+            margin: 4px 0;
+        }
+
+        nav {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px 0;
+            transition: background 0.3s ease, color 0.3s ease;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+
+        nav a:hover {
+            background-color: #45a049;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        ul li {
+            margin: 20px;
+        }
+
+        ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 24px;
+            background: #2980b9;
+            padding: 20px;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        ul li a:hover {
+            background: #3498db;
+        }
+
+        ul li a img {
+            max-width: 100px;
+            max-height: 100px;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            display: none;
+            background-color: sky blue;
+            color: sky blue;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .content h2 {
+            margin-top: 0;
+        }
+
+        .stars {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .star {
+            font-size: 30px;
+            cursor: pointer;
+            color: #ccc;
+            margin: 0 5px;
+            transition: color 0.3s ease;
+        }
+
+        .star:hover, .star.selected {
+            color: #ff0;
+        }
+
+        .contact-info {
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="menu" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <nav id="menu-nav">
+        <a href="javascript:void(0)" onclick="showContent('about')">About</a>
+        <a href="javascript:void(0)" onclick="showContent('whats-new')">What's New?</a>
+        <a href="javascript:void(0)" onclick="showContent('rate')">Rate the App</a>
+        <a href="javascript:void(0)" onclick="showContent('share')">Share the App</a>
+        <a href="javascript:void(0)" onclick="showContent('contact')">Contact</a>
+    </nav>
+
+    <div class="container">
+        <h1>LangSwitch </h1>
+        <ul>
+            <li><a href="{{ url_for('voice_translator') }}">
+                <img src="{{ url_for('static', filename='images/voice_trans.png') }}" alt="Voice Translator">
+                Voice Translator
+            </a></li>
+            <li><a href="{{ url_for('text_to_speech') }}">
+                <img src="{{ url_for('static', filename='images/text_spech.png') }}" alt="Text to Speech">
+                Text to Speech
+            </a></li>
+            <li><a href="{{ url_for('language_translator') }}">
+                <img src="{{ url_for('static', filename='images/translate.png') }}" alt="Language Translator">
+                Language Translator
+            </a></li>
+        </ul>
+    </div>
+    <div class="content" id="about">
+        <h2>About</h2>
+        <p>This app offers multiple features including Voice Translator, Language Translator, and Text-to-Speech Translator. It's designed to help users easily translate text and speech into different languages. Our goal is to make communication across language barriers as seamless as possible. Whether you are traveling, working with international colleagues, or simply learning a new language, this app is here to assist you. With user-friendly interfaces and high accuracy, our translators provide a smooth and efficient experience. We continuously work on enhancing the functionalities to ensure the best service for our users. Join millions who trust our app for their translation needs.</p>
+    </div>
+    <div class="content" id="whats-new">
+        <h2>What's New?</h2>
+        <p>We've recently updated the Translator App with new features and improvements. Now, you can enjoy faster translations, improved accuracy, and a more user-friendly interface. We've also added a dictionary and grammar check feature to enhance your experience. Whether you're traveling, learning a new language, or just need a quick translation, our app is here to help. The latest update includes support for over 100 languages, voice input for instant translations, and offline mode for when you don't have internet access. We have also worked on reducing the app size and optimizing performance for a smoother user experience.</p>
+    </div>
+    <div class="content" id="rate">
+        <h2>Rate the App</h2>
+        <div class="stars">
+            <span class="star" onclick="rateApp(1)">&#9733;</span>
+            <span class="star" onclick="rateApp(2)">&#9733;</span>
+            <span class="star" onclick="rateApp(3)">&#9733;</span>
+            <span class="star" onclick="rateApp(4)">&#9733;</span>
+            <span class="star" onclick="rateApp(5)">&#9733;</span>
+        </div>
+    </div>
+    <div class="content" id="share">
+        <h2>Share the App</h2>
+        <p>Share this app with your friends and family!</p>
+        <button onclick="shareApp()">Share</button>
+    </div>
+    <div class="content" id="contact">
+        <h2>Contact</h2>
+        <div class="contact-info">
+            <p>If you have any questions or need support, please contact us at:</p>
+            <p>Email: support@translatorapp.com</p>
+            <p>Phone: +1 123 456 7890</p>
+            <p>Phone: +1 987 654 3210</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menuNav = document.getElementById('menu-nav');
+            if (menuNav.style.display === 'flex') {
+                menuNav.style.display = 'none';
+            } else {
+                menuNav.style.display = 'flex';
+            }
+        }
+
+        function showContent(id) {
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(id).style.display = 'block';
+        }
+
+        function rateApp(stars) {
+            const starElements = document.querySelectorAll('.star');
+            starElements.forEach((star, index) => {
+                star.classList.remove('selected');
+                if (index < stars) {
+                    star.classList.add('selected');
+                }
+            });
+            alert(`You rated the app ${stars} stars. Thank you!`);
+        }
+
+        function shareApp() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Translator App',
+                    text: 'Check out this amazing Translator App!',
+                    url: window.location.href,
+                }).catch(console.error);
+            } else {
+                alert('Share feature is not supported in your browser.');
+            }
+        }
+    </script>
+</body>
+</html>

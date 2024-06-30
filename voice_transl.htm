@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice Translator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #6dd5fa, #2980b9);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            background-color: #4CAF50;
+            padding: 10px 0;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px 20px;
+        }
+        nav a:hover {
+            background-color: #45a049;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        select, button, input {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            width: 300px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button img {
+            margin-right: 10px;
+        }
+        #result {
+            width: 50%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            font-size: 16px;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: 5px;
+            color: #333;
+        }
+        #audio {
+            margin-top: 20px;
+        }
+        .about-content {
+            display: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 20px;
+        }
+        .help-center-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        .help-center-content {
+            display: none;
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            padding: 20px;
+            z-index: 1000;
+        }
+        .help-center-content h2 {
+            margin-top: 0;
+        }
+        .help-center-content p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+<h1>Voice Translator</h1>
+    <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="javascript:void(0)" onclick="toggleAbout()">About</a>
+        <a href="javascript:void(0)" onclick="toggleHelpCenter()">Help Center</a>
+    </nav>
+    <h2>Translator</h2>
+    <form id="voice-translate-form">
+        <label for="input_language">Input Language</label>
+        <input list="input_languages" name="input_language" id="input_language">
+        <datalist id="input_languages">
+            {% for lang_code, lang_name in languages.items() %}
+                <option value="{{ lang_name }}">
+            {% endfor %}
+        </datalist>
+        <label for="output_language">Output Language</label>
+        <input list="output_languages" name="output_language" id="output_language">
+        <datalist id="output_languages">
+            {% for lang_code, lang_name in languages.items() %}
+                <option value="{{ lang_name }}">
+            {% endfor %}
+        </datalist>
+        <button type="submit">
+            <img src="{{ url_for('static', filename='images/speaker.png') }}" alt="Speaker Icon" width="20" height="20">
+            Translate Voice
+        </button>
+    </form>
+    <div id="result">Translated voice in languages will appear...</div>
+    <audio id="audio" controls></audio>
+    <div class="about-content" id="about-content">
+        <h2>About Voice Translator</h2>
+        <p>The Voice Translator allows you to speak in one language and hear the translation in another language. It's useful for travelers, language learners, and anyone needing quick translations on the go.</p>
+    </div>
+    <div class="help-center-content" id="help-center-content">
+        <h2>Help Center</h2>
+        <p>To use the Voice Translator:</p>
+        <ol>
+            <li>Select the input language by typing it in the input field. Suggestions will appear as you type.</li>
+            <li>Select the output language by typing it in the input field. Suggestions will appear as you type.</li>
+            <li>Click the "Translate Voice" button.</li>
+            <li>Speak clearly into your microphone.</li>
+            <li>The translated text will be displayed, and the audio will play in the selected output language.</li>
+        </ol>
+    </div>
+    <script>
+        function toggleAbout() {
+            const aboutContent = document.getElementById('about-content');
+            const helpCenterContent = document.getElementById('help-center-content');
+            if (aboutContent.style.display === 'none' || aboutContent.style.display === '') {
+                aboutContent.style.display = 'block';
+                helpCenterContent.style.display = 'none';
+            } else {
+                aboutContent.style.display = 'none';
+            }
+        }
+
+        function toggleHelpCenter() {
+            const helpCenterContent = document.getElementById('help-center-content');
+            const aboutContent = document.getElementById('about-content');
+            if (helpCenterContent.style.display === 'none' || helpCenterContent.style.display === '') {
+                helpCenterContent.style.display = 'block';
+                aboutContent.style.display = 'none';
+            } else {
+                helpCenterContent.style.display = 'none';
+            }
+        }
+
+        const form = document.querySelector('#voice-translate-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(form);
+            fetch('/voice_translator', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('result').innerText = data.text;
+                    const audioElement = document.getElementById('audio');
+                    audioElement.src = data.audio_url;
+                    audioElement.play();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

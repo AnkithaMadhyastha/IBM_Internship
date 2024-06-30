@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text to Speech Translator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #6dd5fa, #2980b9);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            padding: 10px;
+
+            background-color: #4CAF50;
+
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            background-color: #45a049;
+        }
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+        label {
+            font-size: 18px;
+            margin-top: 10px;
+            color: #fff;
+        }
+        select, button, textarea {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 300px;
+        }
+        textarea {
+            min-height: 100px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button img {
+            margin-right: 10px;
+        }
+        #result {
+            width: 100%;
+            max-width: 600px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            font-size: 16px;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: 5px;
+            color: #333;
+        }
+
+        .about-content {
+            display: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 20px;
+        }
+        .help-center-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        .help-center-content {
+            display: none;
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            padding: 20px;
+            z-index: 1000;
+        }
+        .help-center-content h2 {
+            margin-top: 0;
+        }
+        .help-center-content p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+<h1>Text to Speech Translator</h1>
+    <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="javascript:void(0)" onclick="toggleAbout()">About</a>
+        <a href="javascript:void(0)" onclick="toggleHelpCenter()">Help Center</a>
+    </nav>
+<h2>Translator</h2>
+    <div class="content">
+
+        <form id="text-to-speech-form">
+            <textarea name="text" placeholder="Enter text here"></textarea>
+            <br>
+            <label for="voice">Select Voice:</label><select name="voice" id="voice">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+            <button type="submit">Convert to Speech</button>
+        </form>
+        <div id="result">voice will be displayed...</div>
+       <!-- <audio id="audio" controls></audio>-->
+    </div>
+    <div class="about-content" id="about-content">
+        <h2>About Text to Speech Translator</h2>
+        <p>The Text to Speech Translator converts written text into spoken words. It is useful for creating audio content from text, assisting people with visual impairments, and more.</p>
+    </div>
+    <div class="help-center-content" id="help-center-content">
+        <h2>Help Center</h2>
+        <p>To use the Text to Speech Translator:</p>
+        <ol>
+            <li>Enter the text you want to convert into the textarea.</li>
+            <li>Select the voice (male or female) you prefer.</li>
+            <li>Click the "Convert to Speech" button.</li>
+            <li>The audio will play, and you can listen to the converted speech.</li>
+        </ol>
+    </div>
+    <script>
+        const form = document.querySelector('#text-to-speech-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(form);
+            fetch('/text_to_speech', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.innerHTML = '<audio controls src="' + data.audio_url + '"></audio>';
+                    document.getElementById('audio').src = data.audio_url;
+                    document.getElementById('audio').play();
+                    alert('Text to speech conversion successful!');
+                }
+            });
+        });
+
+        function toggleAbout() {
+            const aboutContent = document.getElementById('about-content');
+            const helpCenterContent = document.getElementById('help-center-content');
+            if (aboutContent.style.display === 'none' || aboutContent.style.display === '') {
+                aboutContent.style.display = 'block';
+                helpCenterContent.style.display = 'none';
+            } else {
+                aboutContent.style.display = 'none';
+            }
+        }
+
+        function toggleHelpCenter() {
+            const helpCenterContent = document.getElementById('help-center-content');
+            const aboutContent = document.getElementById('about-content');
+            if (helpCenterContent.style.display === 'none' || helpCenterContent.style.display === '') {
+                helpCenterContent.style.display = 'block';
+                aboutContent.style.display = 'none';
+            } else {
+                helpCenterContent.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

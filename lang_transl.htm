@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Language Translator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #6dd5fa, #2980b9);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            background-color: #4CAF50;
+            padding: 10px 0;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px 20px;
+        }
+        nav a:hover {
+            background-color: #45a049;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            margin-bottom: 20px;
+        }
+        textarea {
+            resize: none;
+            height: 100px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        input[type="text"], button {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            width: 50%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            color: #333;
+            font-size: 16px;
+            height: 80px;
+            overflow-y: auto;
+            text-align: center;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        .about-content {
+            display: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 20px;
+        }
+        .help-center-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        .help-center-content {
+            display: none;
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            padding: 20px;
+            z-index: 1000;
+        }
+        .help-center-content h2 {
+            margin-top: 0;
+        }
+        .help-center-content p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Language Translator</h1>
+    <nav>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="javascript:void(0)" onclick="toggleAbout()">About</a>
+        <a href="javascript:void(0)" onclick="toggleHelpCenter()">Help Center</a>
+    </nav>
+    <h2> Translator</h2>
+    <div class="content">
+    <form id="translate-form">
+        <textarea name="input_text" placeholder="Type here..."></textarea>
+        <input type="text" name="dest_language" list="languages" placeholder="Enter language here...">
+        <datalist id="languages">
+            {% for lang_code, lang_name in languages.items() %}
+                <option value="{{ lang_name }}">
+            {% endfor %}
+        </datalist>
+        <button type="submit">Translate</button>
+    </form>
+    <div id="result">Output will be displayed here...</div>
+    </div>
+    <div class="about-content" id="about-content">
+        <h2>About Language Translator</h2>
+        <p>The Language Translator allows you to translate text from one language to another. It is useful for travelers, language learners, and anyone needing quick translations.</p>
+    </div>
+    <div class="help-center-content" id="help-center-content">
+        <h2>Help Center</h2>
+        <p>To use the Language Translator:</p>
+        <ol>
+            <li>Enter the text you want to translate into the textarea.</li>
+            <li>Select the output language from the dropdown.</li>
+            <li>Click the "Translate" button.</li>
+            <li>The translated text will appear in the result area.</li>
+        </ol>
+    </div>
+    <script>
+        function toggleAbout() {
+            const aboutContent = document.getElementById('about-content');
+            const helpCenterContent = document.getElementById('help-center-content');
+            if (aboutContent.style.display === 'none' || aboutContent.style.display === '') {
+                aboutContent.style.display = 'block';
+                helpCenterContent.style.display = 'none';
+            } else {
+                aboutContent.style.display = 'none';
+            }
+        }
+
+        function toggleHelpCenter() {
+            const helpCenterContent = document.getElementById('help-center-content');
+            const aboutContent = document.getElementById('about-content');
+            if (helpCenterContent.style.display === 'none' || helpCenterContent.style.display === '') {
+                helpCenterContent.style.display = 'block';
+                aboutContent.style.display = 'none';
+            } else {
+                helpCenterContent.style.display = 'none';
+            }
+        }
+
+        const form = document.querySelector('#translate-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(form);
+            fetch('/language_translator', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('result').innerText = data.translated_text;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
